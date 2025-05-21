@@ -1,0 +1,15 @@
+import java.util.Date;
+
+public abstract class Transaction {
+    protected double amount;
+    protected Date date;
+
+    public Transaction(double amount, Date date) {
+        this.amount = amount;
+        this.date = date;
+    }
+
+    public double getAmount() { return amount; }
+    public Date getDate() { return date; }
+    public abstract String getDetails();
+}
