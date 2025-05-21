@@ -1,0 +1,59 @@
+import java.util.*;
+
+public class MoneyManagerLogic {
+    private final List<Transaction> transactions = new ArrayList<>();
+    private final List<SavingsGoal> savingsGoals = new ArrayList<>();
+    private double savingsPercent = 20.0; // Default
+
+    public void addIncome(String source, double amount) throws Exception {
+        if (amount <= 0) throw new Exception("Income amount must be positive.");
+        Income income = new Income(source, amount, new Date());
+        transactions.add(income);
+        allocateToSavings(amount);
+    }
+
+    public void addExpense(String category, double amount) throws Exception {
+        if (amount <= 0) throw new Exception("Expense amount must be positive.");
+        Expense expense = new Expense(category, amount, new Date());
+        transactions.add(expense);
+    }
+
+    public void addSavingsGoal(String name, double target) throws Exception {
+        if (target <= 0) throw new Exception("Goal target must be positive.");
+        savingsGoals.add(new SavingsGoal(name, target));
+    }
+
+    public void setSavingsPercent(double percent) throws Exception {
+        if (percent < 0 || percent > 100) throw new Exception("Percent must be between 0 and 100.");
+        this.savingsPercent = percent;
+    }
+
+    private void allocateToSavings(double amount) {
+        double toSave = amount * (savingsPercent / 100.0);
+        if (savingsGoals.isEmpty()) return;
+        double perGoal = toSave / savingsGoals.size();
+        for (SavingsGoal goal : savingsGoals) {
+            goal.addToGoal(perGoal);
+        }
+    }
+
+    public double getTotalIncome() {
+        return transactions.stream().filter(t -> t instanceof Income).mapToDouble(Transaction::getAmount).sum();
+    }
+
+    public double getTotalExpense() {
+        return transactions.stream().filter(t -> t instanceof Expense).mapToDouble(Transaction::getAmount).sum();
+    }
+
+    public List<SavingsGoal> getSavingsGoals() {
+        return savingsGoals;
+    }
+
+    public List<Transaction> getTransactions() {
+        return transactions;
+    }
+
+    public double getNetSavings() {
+        return getTotalIncome() - getTotalExpense();
+    }
+}
