@@ -1,0 +1,129 @@
+import javax.swing.*;
+import java.awt.*;
+import java.util.List;
+
+public class MoneyManager extends JFrame {
+    private final MoneyManagerLogic manager = new MoneyManagerLogic();
+    private final JTextArea outputArea = new JTextArea(10, 40);
+
+    public MoneyManager() {
+        setTitle("Personal Money Manager");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+        outputArea.setEditable(false);
+        JScrollPane scrollPane = new JScrollPane(outputArea);
+
+        // Buttons
+        JPanel buttonPanel = new JPanel();
+        JButton addIncomeBtn = new JButton("Add Income");
+        JButton addExpenseBtn = new JButton("Add Expense");
+        JButton addGoalBtn = new JButton("Add Savings Goal");
+        JButton setPercentBtn = new JButton("Set Savings Percent");
+        JButton summaryBtn = new JButton("Show Summary");
+        buttonPanel.add(addIncomeBtn);
+        buttonPanel.add(addExpenseBtn);
+        buttonPanel.add(addGoalBtn);
+        buttonPanel.add(setPercentBtn);
+        buttonPanel.add(summaryBtn);
+
+        add(scrollPane, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        // Button actions
+        addIncomeBtn.addActionListener(e -> handleAddIncome());
+        addExpenseBtn.addActionListener(e -> handleAddExpense());
+        addGoalBtn.addActionListener(e -> handleAddGoal());
+        setPercentBtn.addActionListener(e -> handleSetPercent());
+        summaryBtn.addActionListener(e -> showSummary());
+
+        setSize(600, 400);
+        setLocationRelativeTo(null);
+        setVisible(true);
+    }
+
+    private void handleAddIncome() {
+        try {
+            String source = JOptionPane.showInputDialog(this, "Enter income source:");
+            if (source == null || source.trim().isEmpty()) throw new Exception("Source cannot be empty.");
+            String amtStr = JOptionPane.showInputDialog(this, "Enter amount:");
+            double amt = Double.parseDouble(amtStr);
+            manager.addIncome(source, amt);
+            outputArea.append("Income added: " + source + " (" + amt + ")\n");
+        } catch (NumberFormatException ex) {
+            showError("Please enter a valid number.");
+        } catch (Exception ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+    private void handleAddExpense() {
+        try {
+            String category = JOptionPane.showInputDialog(this, "Enter expense category:");
+            if (category == null || category.trim().isEmpty()) throw new Exception("Category cannot be empty.");
+            String amtStr = JOptionPane.showInputDialog(this, "Enter amount:");
+            double amt = Double.parseDouble(amtStr);
+            manager.addExpense(category, amt);
+            outputArea.append("Expense added: " + category + " (" + amt + ")\n");
+        } catch (NumberFormatException ex) {
+            showError("Please enter a valid number.");
+        } catch (Exception ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+    private void handleAddGoal() {
+        try {
+            String name = JOptionPane.showInputDialog(this, "Enter goal name:");
+            if (name == null || name.trim().isEmpty()) throw new Exception("Goal name cannot be empty.");
+            String amtStr = JOptionPane.showInputDialog(this, "Enter target amount:");
+            double target = Double.parseDouble(amtStr);
+            manager.addSavingsGoal(name, target);
+            outputArea.append("Savings goal added: " + name + " (" + target + ")\n");
+        } catch (NumberFormatException ex) {
+            showError("Please enter a valid number.");
+        } catch (Exception ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+    private void handleSetPercent() {
+        try {
+            String percentStr = JOptionPane.showInputDialog(this, "Enter savings percent (0-100):");
+            double percent = Double.parseDouble(percentStr);
+            manager.setSavingsPercent(percent);
+            outputArea.append("Savings percent set to: " + percent + "%\n");
+        } catch (NumberFormatException ex) {
+            showError("Please enter a valid number.");
+        } catch (Exception ex) {
+            showError(ex.getMessage());
+        }
+    }
+
+    private void showSummary() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("==== Summary ====\n");
+        sb.append("Total Income: ").append(String.format("%.2f", manager.getTotalIncome())).append("\n");
+        sb.append("Total Expense: ").append(String.format("%.2f", manager.getTotalExpense())).append("\n");
+        sb.append("Net Savings: ").append(String.format("%.2f", manager.getNetSavings())).append("\n");
+        sb.append("Savings Goals:\n");
+        for (SavingsGoal goal : manager.getSavingsGoals()) {
+            sb.append(" - ").append(goal.getGoalStatus()).append("\n");
+        }
+        sb.append("Recent Transactions:\n");
+        List<Transaction> tList = manager.getTransactions();
+        int cnt = 0;
+        for (int i = tList.size() - 1; i >= 0 && cnt < 5; i--, cnt++) {
+            sb.append(" - ").append(tList.get(i).getDetails()).append("\n");
+        }
+        sb.append("=================\n");
+        outputArea.append(sb.toString());
+    }
+
+    private void showError(String msg) {
+        JOptionPane.showMessageDialog(this, msg, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(MoneyManager::new);
+    }
+}
