@@ -1,0 +1,15 @@
+import java.util.Date;
+
+public class Income extends Transaction {
+    private String source;
+
+    public Income(String source, double amount, Date date) {
+        super(amount, date);
+        this.source = source;
+    }
+
+    @Override
+    public String getDetails() {
+        return "Income: " + source + " | " + amount + " | " + new java.text.SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+}
