@@ -1,0 +1,19 @@
+public class SavingsGoal {
+    private String name;
+    private double targetAmount;
+    private double currentAmount;
+
+    public SavingsGoal(String name, double targetAmount) {
+        this.name = name;
+        this.targetAmount = targetAmount;
+        this.currentAmount = 0.0;
+    }
+
+    public String getName() { return name; }
+    public double getTargetAmount() { return targetAmount; }
+    public double getCurrentAmount() { return currentAmount; }
+    public void addToGoal(double amount) { this.currentAmount += amount; }
+    public String getGoalStatus() {
+        return name + ": " + String.format("%.2f", currentAmount) + " / " + String.format("%.2f", targetAmount);
+    }
+}
