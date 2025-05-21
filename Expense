@@ -1,0 +1,15 @@
+import java.util.Date;
+
+public class Expense extends Transaction {
+    private String category;
+
+    public Expense(String category, double amount, Date date) {
+        super(amount, date);
+        this.category = category;
+    }
+
+    @Override
+    public String getDetails() {
+        return "Expense: " + category + " | " + amount + " | " + new java.text.SimpleDateFormat("yyyy-MM-dd").format(date);
+    }
+}
